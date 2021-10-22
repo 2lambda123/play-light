@@ -56,6 +56,8 @@ public class WebCamMic : MonoBehaviour
     // 4, clip playback started
     // 5, clip playback ended, reurn to 0
 
+    private float progressSquare =0.3f;
+
 // Audio Mixer controls
     [SerializeField] string _volumeParameter = "MasterVolume"; 
     [SerializeField] AudioMixer _mixer; // set to -MAsterVolume at -80 at .play to remove echo, set to 0 at playback
@@ -71,7 +73,9 @@ public class WebCamMic : MonoBehaviour
     private void StopMicrophone()
     {
         if(audioSource != null){
-            audioSource.Stop();
+
+            if(Microphone.IsRecording(_deviceMic) == true) {Microphone.End(_deviceMic);}
+            audioSource.Stop(); 
             audioSource = null;
             stopStartMicText.text = "Start Mic";
         }
@@ -95,6 +99,7 @@ public class WebCamMic : MonoBehaviour
             filenameText.text = "Audio taken: "+reportFilename+".wav";
             takeAudioText.text = "Take Audio";
             takeAudioText.color = Color.yellow;
+            circles[8].transform.localScale = new Vector3(0.3f, 0.3f, 1f);
 
             string outS = "Stressed-Relaxed, " + stressedRelaxed.ToString("##.#")+",   ";
             outS += "Exhaused-Energized, " + exhausedEnergized.ToString("##.#")+",   ";
@@ -120,7 +125,7 @@ public class WebCamMic : MonoBehaviour
                 _deviceMic = Microphone.devices[currentMicIndex];
 // Debug.Log("Mic Device name: " + _deviceMic.ToString());
                 microphoneText.text = _deviceMic.ToString();
-                audioSource.clip = Microphone.Start(_deviceMic, true, 999, 44100); // loop and 999 sec rec
+                audioSource.clip = Microphone.Start(_deviceMic, false, 30, 44100); // loop and 999 sec rec
         // Mute the sound with an Audio Mixer group bc we don't want the player to hear it
 // https://www.youtube.com/watch?v=CdNBsWowRbE  7:32 (isRecording check )
                 if(Microphone.IsRecording(_deviceMic)){
@@ -386,6 +391,7 @@ private void ResetAudioButtons(){
     takeAudioText.color = Color.green;
     stopStartMicText.text = "Start/Stop Mic";
     switchMicrophoneText.text = "Switch Microphone";
+    circles[8].transform.localScale = new Vector3(0.3f, 0.3f, 1f);
 
 }
 
@@ -439,6 +445,8 @@ filenameText.text = path;
     currentMicIndex = PlayerPrefs.GetInt("currentMicIndex",currentMicIndex);
 // Debug.Log("Start: currentCamIndex: "+currentCamIndex);
 
+    StartStopCam_Clicked();
+
 }
 
  public void Update(){
@@ -464,24 +472,20 @@ filenameText.text = path;
         takeAudioText.color = Color.green;
     }
 
-    if(micStatus==1) {
+    if(Microphone.IsRecording(_deviceMic) == true){ // white spot shows GetPosition of recording
+
+// Debug.Log("Microphone.GetPosition(_deviceMic): " + Microphone.GetPosition(_deviceMic)); //        Microphone.GetPosition(_deviceMic)
+
         rotationDirection = 1f;
-    }
-    if(micStatus==0) {
-        rotationDirection = 0.2f;
-    }
-    if(micStatus==3) {
+        float gp = (float)Microphone.GetPosition(_deviceMic)/120000f;
+        circles[8].transform.localScale = new Vector3(gp, 0.3f, 1f); //pos/10f
+
+
+
+    } else { // to animate indicator
         rotationDirection = -0.2f;
     }
-    if(micStatus==2) {
-        rotationDirection = -1f;
-    }
-    if(micStatus==4) {
-        rotationDirection = 0.2f;
-    }
-        if(micStatus==6) {
-        micStatus=0;
-    }
+
         pos += rotationDirection*speed*Time.deltaTime;
         float x = Mathf.Sin(pos+2f*3.14159f/8f*i)*(radius + heightMultiplier/Mathf.Log(freqsum, 3));
         float y = Mathf.Cos(pos+2f*3.14159f/8f*i)*(radius + heightMultiplier/Mathf.Log(freqsum, 3));
