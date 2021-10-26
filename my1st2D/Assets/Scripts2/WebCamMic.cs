@@ -56,7 +56,7 @@ public class WebCamMic : MonoBehaviour
     // 4, clip playback started
     // 5, clip playback ended, reurn to 0
 
-    private float progressSquare =0.3f;
+    // private float progressSquare =0.3f;
 
 // Audio Mixer controls
     [SerializeField] string _volumeParameter = "MasterVolume"; 
@@ -65,9 +65,12 @@ public class WebCamMic : MonoBehaviour
 #endregion
 
 #region PSY
-    public float excitedDepressed = 0f; // -10, +10
-    public float exhausedEnergized = 0f; // -10, +10
-    public float stressedRelaxed = 0f; // -10, +10
+    public float psyTense = 0f; // 0, +4
+    public float psyWorried = 0f; // 0, +4
+    public float psyUpset = 0f; // 0, +4
+    public float psyRelaxed = 0f; // 0, +4
+    public float psyCalm = 0f; // 0, +4
+    public float psyContent = 0f; // 0, +4
 #endregion
   
     private void StopMicrophone()
@@ -101,10 +104,14 @@ public class WebCamMic : MonoBehaviour
             takeAudioText.color = Color.yellow;
             circles[8].transform.localScale = new Vector3(0.3f, 0.3f, 1f);
 
-            string outS = "Stressed-Relaxed, " + stressedRelaxed.ToString("##.#")+",   ";
-            outS += "Exhaused-Energized, " + exhausedEnergized.ToString("##.#")+",   ";
-            outS += "Depressed-Excited, " + excitedDepressed.ToString("##.#")+",   ";
-            SavWav.WriteString(filename,outS);
+            // string outS = "Tense, " + psyTense.ToString("##.#")+", ";
+            // outS += "Worried, " + psyWorried.ToString("##.#")+", ";
+            // outS += "Upset, " + psyUpset.ToString("##.#")+", ";
+            // outS += "Relaxed, " + psyRelaxed.ToString("##.#")+", ";
+            // outS += "Calm, " + psyCalm.ToString("##.#")+", ";
+            // outS += "Content, " + psyContent.ToString("##.#")+", ";
+
+            // SavWav.WriteString(filename,outS);
 
             StopMicrophone();
             ResetAudioButtons();
@@ -401,38 +408,28 @@ private void ResetAudioButtons(){
         SceneManager.LoadScene("MainMenu");
     }
 
-public void ExcitedDepressed(float newExcitedDepressed){
-    excitedDepressed = newExcitedDepressed;
-    // Debug.Log("excitedDepressed: "+ excitedDepressed);
+public void Tense(float newpsyTense){
+    psyTense = newpsyTense;
+// Debug.Log("in Tense(),  psyTense: " +psyTense);
 }
-public void ExhausedEnergized(float newExhausedEnergized){
-    exhausedEnergized = newExhausedEnergized;
-    // Debug.Log("exhausedEnergized: "+ exhausedEnergized);
+public void Worried(float npsyWorried){
+    psyWorried = npsyWorried;
 }
-public void StressedRelaxed(float newStressedRelaxed){
-    stressedRelaxed = newStressedRelaxed;
-    // Debug.Log("stressedRelaxed: "+ stressedRelaxed);
+public void Upset(float npsyUpset){
+    psyUpset = npsyUpset;
+}
+public void Relaxed(float npsyRelaxed){
+    psyRelaxed = npsyRelaxed;
+}
+public void Calm(float npsyCalm){
+    psyCalm = npsyCalm;
+}
+public void Content(float npsyContent){
+    psyContent = npsyContent;
 }
 
 
 
-private void onDisable(){  // is not invoked in unity editor
-
-// Debug.Log("onDisable: currentCamIndex: "+currentCamIndex);
-//         PlayerPrefs.SetInt("currentCamIndex",currentCamIndex);
-//         PlayerPrefs.SetInt("currentMicIndex",currentMicIndex); 
-
-//         reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-hh-mm-tt");
-//         filename =path +"/tmp/"+reportFilename; 
-//         filenameText.text = reportFilename;
-// // Debug.Log("filename: " +filename);
-//         string outS = "Stressed-Relaxed, " + stressedRelaxed.ToString("##.#")+",   ";
-//         outS += "Exhaused-Energized, " + exhausedEnergized.ToString("##.#")+",   ";
-//         outS += "Depressed-Excited, " + excitedDepressed.ToString("##.#")+",   ";
-//         SavWav.WriteString(filename,outS);
-
-
-}
 void Start(){
     // filename for saving png and wav
     // path = Application.dataPath+"/";
@@ -495,6 +492,25 @@ filenameText.text = path;
 
  }//Update
 
+void OnApplicationFocus(bool hasFocus) //https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnApplicationFocus.html
+    {
+Debug.Log("OnApplicationFocus (save psy): " + hasFocus);
+// Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense);
+// Save psy when app goes to background or closed
+        if(hasFocus == false){ // when app is closed. 
+            string outS = "Tense, " + psyTense.ToString("##.#")+", ";
+            outS += "Worried, " + psyWorried.ToString("##.#")+", ";
+            outS += "Upset, " + psyUpset.ToString("##.#")+", ";
+            outS += "Relaxed, " + psyRelaxed.ToString("##.#")+", ";
+            outS += "Calm, " + psyCalm.ToString("##.#")+", ";
+            outS += "Content, " + psyContent.ToString("##.#")+", ";
 
+            reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-hh-mm-tt");
+            filename =path +"/tmp/"+reportFilename; 
+            filenameText.text = "Psy taken: "+reportFilename+".txt";
+            SavWav.WriteString(filename,outS);
+        }
+
+    }
 
 }//class
