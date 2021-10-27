@@ -71,6 +71,8 @@ public class WebCamMic : MonoBehaviour
     public float psyRelaxed = 0f; // 0, +4
     public float psyCalm = 0f; // 0, +4
     public float psyContent = 0f; // 0, +4
+    public float psyDepressed = 0f; // 0, +4
+    public float psyExcited = 0f; // 0, +4
 #endregion
   
     private void StopMicrophone()
@@ -427,8 +429,12 @@ public void Calm(float npsyCalm){
 public void Content(float npsyContent){
     psyContent = npsyContent;
 }
-
-
+public void Excited(float npsyExcited){
+    psyExcited = npsyExcited;
+}
+public void Depressed(float npsyDepressed){
+    psyDepressed = npsyDepressed;
+}
 
 void Start(){
     // filename for saving png and wav
@@ -495,20 +501,23 @@ filenameText.text = path;
 void OnApplicationFocus(bool hasFocus) //https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnApplicationFocus.html
     {
 Debug.Log("OnApplicationFocus (save psy): " + hasFocus);
-// Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense);
+Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
 // Save psy when app goes to background or closed
         if(hasFocus == false){ // when app is closed. 
             string outS = "Tense, " + psyTense.ToString("##.#")+", ";
             outS += "Worried, " + psyWorried.ToString("##.#")+", ";
             outS += "Upset, " + psyUpset.ToString("##.#")+", ";
-            outS += "Relaxed, " + psyRelaxed.ToString("##.#")+", ";
+            outS += "Depressed, " + psyDepressed.ToString("##.#")+", ";
+            outS +=  "Relaxed, " + psyRelaxed.ToString("##.#")+", ";
             outS += "Calm, " + psyCalm.ToString("##.#")+", ";
             outS += "Content, " + psyContent.ToString("##.#")+", ";
+            outS += "Excited, " + psyExcited.ToString("##.#")+", ";
 
             reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-hh-mm-tt");
             filename =path +"/tmp/"+reportFilename; 
             filenameText.text = "Psy taken: "+reportFilename+".txt";
             SavWav.WriteString(filename,outS);
+
         }
 
     }
