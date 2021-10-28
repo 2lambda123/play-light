@@ -43,6 +43,9 @@ public class WebCamMic : MonoBehaviour
     private float[] spectrum = new float[numberOfSamples];
     public GameObject[] circles;
 
+    public GameObject[] sliders;
+    private Slider myslider;
+
     private Vector3 origin = new Vector3(0f, -3.0f, 0f);
     private float radius =  0.3f; 
     private float speed = 0.25f;
@@ -441,6 +444,8 @@ void Start(){
     // path = Application.dataPath+"/";
     path = Application.persistentDataPath+"/";  
 Debug.Log("Application.persistentDataPath: "+path);
+
+
 filenameText.text = path;
     //="/storage/emulated/0/Download/";
 
@@ -517,6 +522,14 @@ Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
             filename =path +"/tmp/"+reportFilename; 
             filenameText.text = "Psy taken: "+reportFilename+".txt";
             SavWav.WriteString(filename,outS);
+
+
+            // reset sliders 
+            for(int i=0;i<8;i++){
+                myslider = sliders[i].GetComponent<Slider>();
+                myslider.value = 0f;
+            }
+
 
         }
 

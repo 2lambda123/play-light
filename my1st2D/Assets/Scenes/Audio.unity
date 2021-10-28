@@ -173,6 +173,15 @@ MonoBehaviour:
   - {fileID: 1507403455}
   - {fileID: 688502362}
   - {fileID: 633785634}
+  sliders:
+  - {fileID: 908554599}
+  - {fileID: 2142447859}
+  - {fileID: 1850441707}
+  - {fileID: 238277216}
+  - {fileID: 1338854069}
+  - {fileID: 2018180381}
+  - {fileID: 1794014502}
+  - {fileID: 570376556}
   _volumeParameter: MasterVolume
   _mixer: {fileID: 24100000, guid: f4792ec35b5c43d42b8c3af118acd0b7, type: 2}
   psyTense: 0
@@ -2114,7 +2123,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633785634}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.45, y: -3.37, z: 0}
+  m_LocalPosition: {x: -2.45, y: -3.18, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
