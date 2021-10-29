@@ -509,12 +509,14 @@ Debug.Log("OnApplicationFocus (save psy): " + hasFocus);
 Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
 // Save psy when app goes to background or closed
         if(hasFocus == false){ // when app is closed. 
-            string outS = "Tense, " + psyTense.ToString("##.#")+", ";
+            // string outS = "Tense, " + psyTense.ToString("##.#")+", ";
+            // outS +=  "Relaxed, " + psyRelaxed.ToString("##.#")+", ";
+            string outS = "Exhausted, " + psyTense.ToString("##.#")+", ";
+            outS +=  "Energized, " + psyRelaxed.ToString("##.#")+", ";
             outS += "Worried, " + psyWorried.ToString("##.#")+", ";
             outS += "Upset, " + psyUpset.ToString("##.#")+", ";
             outS += "Depressed, " + psyDepressed.ToString("##.#")+", ";
-            outS +=  "Relaxed, " + psyRelaxed.ToString("##.#")+", ";
-            outS += "Calm, " + psyCalm.ToString("##.#")+", ";
+             outS += "Calm, " + psyCalm.ToString("##.#")+", ";
             outS += "Content, " + psyContent.ToString("##.#")+", ";
             outS += "Excited, " + psyExcited.ToString("##.#")+", ";
 
