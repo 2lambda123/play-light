@@ -77,6 +77,20 @@ public class WebCamMic : MonoBehaviour
     public float psyDepressed = 0f; // 0, +4
     public float psyExcited = 0f; // 0, +4
 #endregion
+
+#region GPSLocation
+
+public Text GPSStatus;
+public Text latitudeValue;
+public Text longitudeValue;
+public Text altitudeValue;
+public Text horizontalAccuracyValue;
+
+public Text timeStampValue;
+
+public GameObject gpsIndicator;
+
+#endregion
   
     private void StopMicrophone()
     {
@@ -289,13 +303,22 @@ public class WebCamMic : MonoBehaviour
 
         // pixels = tex.GetPixels();
 
-        reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-hh-mm-tt");
+        reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-HH-mm");
         filename =path +"/tmp/"+reportFilename; 
         filenameText.text = reportFilename;
 // Debug.Log("filename: " +filename);
         byte[] bytes = photo.EncodeToPNG();
         File.WriteAllBytes(filename+".png", bytes);
         filenameText.text = "Photo taken: "+reportFilename+".png";
+
+        // log to csv file
+        string outS = System.DateTime.Now.ToString("yy-MM-dd HH-mm") + ", "; //time stamp     
+        outS +=  "Latitude, " + latitudeValue.text.ToString() + ", ";
+        outS +=  "Longitude, " +longitudeValue.text+ ", ";
+        outS +=  "Altitude, " +altitudeValue.text+ ", ";
+        outS +=  "Accuracy, " +horizontalAccuracyValue.text+ ", ";
+        outS +=  reportFilename + "\n";
+Debug.Log(outS);
     }
 
 
@@ -439,20 +462,81 @@ public void Depressed(float npsyDepressed){
     psyDepressed = npsyDepressed;
 }
 
+IEnumerator GPSLoc(){
+    if(!Input.location.isEnabledByUser){
+        GPSStatus.text = "False isEnabledByUser";
+        gpsIndicator.GetComponent<Renderer>().material.color = Color.red;
+        yield break;
+    }
+
+    Input.location.Start();
+
+    int maxWait = 20;
+    while(Input.location.status == LocationServiceStatus.Initializing && maxWait > 0){
+        yield return new WaitForSeconds(1);
+        maxWait--;
+    }
+
+    if(maxWait<1){
+        GPSStatus.text = "Time out";
+        gpsIndicator.GetComponent<Renderer>().material.color = Color.magenta;
+        yield break;
+    }
+
+    // connection failed 
+    if(Input.location.status == LocationServiceStatus.Failed){
+        GPSStatus.text = "Unable to determine device location";
+        gpsIndicator.GetComponent<Renderer>().material.color = Color.yellow; 
+        yield break;
+    }else{
+        //Access granted
+        GPSStatus.text = "Location running";
+        gpsIndicator.GetComponent<Renderer>().material.color = Color.green; 
+        InvokeRepeating("UpdateGPSData", 0.5f, 1f);
+    }
+
+}//IEnumerator GPSLoc(){
+
+
+private void UpdateGPSData(){
+    if(Input.location.status == LocationServiceStatus.Running){
+// Access granted to GPS values and it has been init
+        GPSStatus.text = "Running";
+        var gpsInd = circles[9].GetComponent<Renderer>();
+        gpsInd.material.SetColor("_Color", Color.green);
+        latitudeValue.text = Input.location.lastData.latitude.ToString();
+        longitudeValue.text = Input.location.lastData.longitude.ToString();
+        altitudeValue.text = Input.location.lastData.altitude.ToString();
+        horizontalAccuracyValue.text = Input.location.lastData.horizontalAccuracy.ToString();
+        timeStampValue.text = Input.location.lastData.timestamp.ToString();
+
+    }else{
+        // service stopped
+        GPSStatus.text = "Stoped";
+        gpsIndicator.GetComponent<Renderer>().material.color = Color.black; 
+
+    }
+}
+
+
+
 void Start(){
+
     // filename for saving png and wav
     // path = Application.dataPath+"/";
     path = Application.persistentDataPath+"/";  
-Debug.Log("Application.persistentDataPath: "+path);
+// Debug.Log("Application.persistentDataPath: "+path);
 
 
-filenameText.text = path;
+    filenameText.text = path;
     //="/storage/emulated/0/Download/";
 
     currentCamIndex = PlayerPrefs.GetInt("currentCamIndex",currentCamIndex);
     currentMicIndex = PlayerPrefs.GetInt("currentMicIndex",currentMicIndex);
 // Debug.Log("Start: currentCamIndex: "+currentCamIndex);
 
+
+    StartCoroutine(GPSLoc());
     StartStopCam_Clicked();
 
 }
