@@ -568,11 +568,24 @@ private string AddLocationToCSVstring(string outS){
         // location to csv file
         // outS= ""; // initialize with empty
         outS += System.DateTime.Now.ToString("yy-MM-dd HH:mm") + ", "; //date time     
-        outS +=  "Latitude, Longitude:, " + latitudeValueStr + ", " + longitudeValueStr+ ", ";
-        outS +=  "Altitude: , " +altitudeValueStr+ ", ";
-        outS +=  "Accuracy: , " +horizontalAccuracyValueStr+ ", ";
-        outS +=  "Location status: , " +GPSStatusStr+ ", "; 
-        outS +=  "Location TimeStamp: , " +timeStampValueStr+ ", ";
+        // outS +=  "Latitude, Longitude:, " + latitudeValueStr + ", " + longitudeValueStr+ ", ";
+        // outS +=  "Altitude: , " +altitudeValueStr+ ", ";
+        // outS +=  "Accuracy: , " +horizontalAccuracyValueStr+ ", ";
+        // outS +=  "Location status: , " +GPSStatusStr+ ", "; 
+        // outS +=  "Location TimeStamp: , " +timeStampValueStr+ ", ";
+
+            if(System.String.IsNullOrEmpty(latitudeValueStr) ){outS += "0 , ";}
+            else {outS +=  latitudeValueStr+", ";}
+            if(System.String.IsNullOrEmpty(longitudeValueStr) ){outS += "0 , ";}
+            else {outS +=  longitudeValueStr+", ";}
+            if(System.String.IsNullOrEmpty(altitudeValueStr) ){outS += "0 , ";}
+            else {outS +=  altitudeValueStr+", ";}
+            if(System.String.IsNullOrEmpty(horizontalAccuracyValueStr) ){outS += "0 , ";}
+            else {outS +=  horizontalAccuracyValueStr+", ";}
+            if(System.String.IsNullOrEmpty(GPSStatusStr) ){outS += "0 , ";}
+            else {outS +=  GPSStatusStr+", ";}
+            if(System.String.IsNullOrEmpty(timeStampValueStr) ){outS += "0 , ";}
+            else {outS +=  timeStampValueStr+", ";}
 
         return outS;
 }
@@ -659,14 +672,33 @@ Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
         if(hasFocus == false){ // when app is closed. 
             // string outS = "Tense, " + psyTense.ToString("##.#")+", ";
             // outS +=  "Relaxed, " + psyRelaxed.ToString("##.#")+", ";
-            string outS = "Exhausted, " + psyTense.ToString("##.#")+", ";
-            outS +=  "Energized, " + psyRelaxed.ToString("##.#")+", ";
-            outS += "Worried, " + psyWorried.ToString("##.#")+", ";
-            outS += "Upset, " + psyUpset.ToString("##.#")+", ";
-            outS += "Depressed, " + psyDepressed.ToString("##.#")+", ";
-             outS += "Calm, " + psyCalm.ToString("##.#")+", ";
-            outS += "Content, " + psyContent.ToString("##.#")+", ";
-            outS += "Excited, " + psyExcited.ToString("##.#")+", ";
+            
+            // string outS = "Exhausted, " + (offs+psyTense).ToString("##.#")+", ";
+            // outS +=  "Energized, " + (offs+psyRelaxed).ToString("##.#")+", ";
+            // outS += "Worried, " + (offs+psyWorried).ToString("##.#")+", ";
+            // outS += "Upset, " + (offs+psyUpset).ToString("##.#")+", ";
+            // outS += "Depressed, " + (offs+psyDepressed).ToString("##.#")+", ";
+            //  outS += "Calm, " + (offs+psyCalm).ToString("##.#")+", ";
+            // outS += "Content, " + (offs+psyContent).ToString("##.#")+", ";
+            // outS += "Excited, " + (offs+psyExcited).ToString("##.#")+", ";
+
+            string outS ="";
+            if(System.String.IsNullOrEmpty((psyTense).ToString("##.#"))){outS += "0 , ";}
+            else {outS +=  psyTense.ToString("##.#")+", ";}
+            if(System.String.IsNullOrEmpty((psyWorried).ToString("##.#"))){outS += "0 , ";}
+            else {outS +=  psyWorried.ToString("##.#")+", ";}            
+            if(System.String.IsNullOrEmpty((psyUpset).ToString("##.#"))){outS += "0 , ";}
+            else {outS +=  psyUpset.ToString("##.#")+", ";}            
+            if(System.String.IsNullOrEmpty((psyDepressed).ToString("##.#"))){outS += "0 , ";}
+            else {outS +=  psyDepressed.ToString("##.#")+", ";}            
+            if(System.String.IsNullOrEmpty((psyCalm).ToString("##.#"))){outS += "0 , ";}
+            else {outS +=  psyCalm.ToString("##.#")+", ";}            
+            if(System.String.IsNullOrEmpty((psyContent).ToString("##.#"))){outS += "0 , ";}
+            else {outS +=  psyContent.ToString("##.#")+", ";}
+            if(System.String.IsNullOrEmpty((psyExcited).ToString("##.#"))){outS += "0 , ";}
+            else {outS +=  psyExcited.ToString("##.#");}
+
+    
 
             // reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-hh-mm-tt");
             // filename =path +"/tmp/"+reportFilename; 
