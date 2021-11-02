@@ -80,13 +80,25 @@ public class WebCamMic : MonoBehaviour
 
 #region GPSLocation
 
-public Text GPSStatus;
+public Text GPSStatusValue;
 public Text latitudeValue;
 public Text longitudeValue;
 public Text altitudeValue;
 public Text horizontalAccuracyValue;
 
 public Text timeStampValue;
+
+
+private string GPSStatusStr;
+private string latitudeValueStr;
+private string longitudeValueStr;
+private string altitudeValueStr;
+private string horizontalAccuracyValueStr;
+
+private string timeStampValueStr;
+
+
+
 
 public GameObject gpsIndicator;
 
@@ -106,37 +118,7 @@ public GameObject gpsIndicator;
 
     public void StartStopMic_Clicked(){
 
-        if((micStatus==3)||(micStatus==5)){ // Recoding finished, or PLay finished
 
-            micStatus=6;
-            stopStartMicText.text = "Start/Stop Mic";
-            switchMicrophoneText.text = "Switch Microphone";
-            
-
-            reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-hh-mm-tt");
-            filename =path +"/tmp/"+reportFilename; 
-            filenameText.text = reportFilename;
-
-            SavWav.Save(filename, audioSource.clip);
-            filenameText.text = "Audio taken: "+reportFilename+".wav";
-            takeAudioText.text = "Take Audio";
-            takeAudioText.color = Color.yellow;
-            circles[8].transform.localScale = new Vector3(0.3f, 0.3f, 1f);
-
-            // string outS = "Tense, " + psyTense.ToString("##.#")+", ";
-            // outS += "Worried, " + psyWorried.ToString("##.#")+", ";
-            // outS += "Upset, " + psyUpset.ToString("##.#")+", ";
-            // outS += "Relaxed, " + psyRelaxed.ToString("##.#")+", ";
-            // outS += "Calm, " + psyCalm.ToString("##.#")+", ";
-            // outS += "Content, " + psyContent.ToString("##.#")+", ";
-
-            // SavWav.WriteString(filename,outS);
-
-            StopMicrophone();
-            ResetAudioButtons();
-
-
-        }
 
         if(micStatus==0){  
             // micStatus=1;
@@ -169,8 +151,45 @@ public GameObject gpsIndicator;
             audioSource.Play();
 
             stopStartMicText.text = "Stop Mic";
-        }
+            } // else
         }//if(micStatus==0){
+
+
+        if((micStatus==3)||(micStatus==5)){ // Recoding finished, or PLay finished
+
+            micStatus=6;
+            stopStartMicText.text = "Start/Stop Mic";
+            switchMicrophoneText.text = "Switch Microphone";
+            
+
+            reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd_HH-mm");
+            filename =path +"/"+reportFilename; 
+            filenameText.text = reportFilename;
+
+            SavWav.Save(filename, audioSource.clip);
+            filenameText.text = "Audio taken: "+reportFilename+".wav";
+// Debug.Log("Audio taken: "+reportFilename+".wav");
+
+            takeAudioText.text = "Take Audio";
+            takeAudioText.color = Color.yellow;
+            circles[8].transform.localScale = new Vector3(0.3f, 0.3f, 1f);
+
+
+        // location to csv file
+            string outS ="";
+            outS = AddLocationToCSVstring(outS); // Add location data to log csv string
+            outS +=  reportFilename + ".wav";
+            SavWav.WriteString(path+"/log_audio_v1",outS);
+
+            StopMicrophone();
+            ResetAudioButtons();
+
+
+        }
+
+
+
+
     }
 
 
@@ -208,16 +227,16 @@ public GameObject gpsIndicator;
 
         if( WebCamTexture.devices.Length > 0 )
         {
-        currentCamIndex +=1;
-        currentCamIndex %= WebCamTexture.devices.Length;  //  Inx not to go beyound Length
+            currentCamIndex +=1;
+            currentCamIndex %= WebCamTexture.devices.Length;  //  Inx not to go beyound Length
 
 // Debug.Log("currentCamIndex = " + currentCamIndex);
 
-        if(tex != null)
-        {
-            StopCamera();
-            StartStopCam_Clicked();
-        }
+            if(tex != null)
+            {
+                StopCamera();
+                StartStopCam_Clicked();
+            }
 
         }
 
@@ -266,7 +285,7 @@ public GameObject gpsIndicator;
 
         //tic = Time.realtimeSinceStartup;
         // https://docs.unity3d.com/ScriptReference/Time-realtimeSinceStartup.html
-        //Debug.Log("In Snap_Clicked, Time.realtimeSinceStartup: " + tic);
+    // Debug.Log("In Snap_Clicked, Time.realtimeSinceStartup: " );
 
         if(tex != null) StartCoroutine(TakePhoto()); 
 
@@ -303,22 +322,24 @@ public GameObject gpsIndicator;
 
         // pixels = tex.GetPixels();
 
-        reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-HH-mm");
-        filename =path +"/tmp/"+reportFilename; 
+        reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd_HH-mm");
+        filename =path +"/"+reportFilename; 
         filenameText.text = reportFilename;
 // Debug.Log("filename: " +filename);
         byte[] bytes = photo.EncodeToPNG();
         File.WriteAllBytes(filename+".png", bytes);
-        filenameText.text = "Photo taken: "+reportFilename+".png";
+        filenameText.text = "Photo taken: "+reportFilename + ".png";
+Debug.Log("filenameText.text: " +"Photo taken: "+reportFilename + ".png");
 
-        // log to csv file
-        string outS = System.DateTime.Now.ToString("yy-MM-dd HH-mm") + ", "; //time stamp     
-        outS +=  "Latitude, " + latitudeValue.text.ToString() + ", ";
-        outS +=  "Longitude, " +longitudeValue.text+ ", ";
-        outS +=  "Altitude, " +altitudeValue.text+ ", ";
-        outS +=  "Accuracy, " +horizontalAccuracyValue.text+ ", ";
-        outS +=  reportFilename + "\n";
-Debug.Log(outS);
+        // location to csv file
+        string outS ="";
+        outS = AddLocationToCSVstring(outS); // Add location data to log csv string
+        outS +=  reportFilename + ".png";
+//Debug.Log(outS);
+        SavWav.WriteString(path+"/log_images_v1",outS);
+//Debug.Log(path+"/imges_0log.csv");
+
+
     }
 
 
@@ -427,6 +448,8 @@ private void ResetAudioButtons(){
     stopStartMicText.text = "Start/Stop Mic";
     switchMicrophoneText.text = "Switch Microphone";
     circles[8].transform.localScale = new Vector3(0.3f, 0.3f, 1f);
+    micStatus=0;
+    // filenameText.text = path;
 
 }
 
@@ -464,12 +487,13 @@ public void Depressed(float npsyDepressed){
 
 IEnumerator GPSLoc(){
     if(!Input.location.isEnabledByUser){
-        GPSStatus.text = "False isEnabledByUser";
+        GPSStatusStr = "isEnabledByUser: False";
+        GPSStatusValue.text = GPSStatusStr; 
         gpsIndicator.GetComponent<Renderer>().material.color = Color.red;
         yield break;
     }
 
-    Input.location.Start();
+    Input.location.Start(1, 0.1f);
 
     int maxWait = 20;
     while(Input.location.status == LocationServiceStatus.Initializing && maxWait > 0){
@@ -478,21 +502,25 @@ IEnumerator GPSLoc(){
     }
 
     if(maxWait<1){
-        GPSStatus.text = "Time out";
+        GPSStatusStr = "Location: Time out";
+        GPSStatusValue.text = GPSStatusStr; 
         gpsIndicator.GetComponent<Renderer>().material.color = Color.magenta;
         yield break;
     }
 
     // connection failed 
     if(Input.location.status == LocationServiceStatus.Failed){
-        GPSStatus.text = "Unable to determine device location";
+        GPSStatusStr = "Unable to determine device location";
+        GPSStatusValue.text = GPSStatusStr; 
         gpsIndicator.GetComponent<Renderer>().material.color = Color.yellow; 
         yield break;
     }else{
         //Access granted
-        GPSStatus.text = "Location running";
+        GPSStatusStr = "Location running";
+        GPSStatusValue.text = GPSStatusStr; 
         gpsIndicator.GetComponent<Renderer>().material.color = Color.green; 
         InvokeRepeating("UpdateGPSData", 0.5f, 1f);
+        yield break;
     }
 
 }//IEnumerator GPSLoc(){
@@ -501,24 +529,53 @@ IEnumerator GPSLoc(){
 private void UpdateGPSData(){
     if(Input.location.status == LocationServiceStatus.Running){
 // Access granted to GPS values and it has been init
-        GPSStatus.text = "Running";
-        var gpsInd = circles[9].GetComponent<Renderer>();
-        gpsInd.material.SetColor("_Color", Color.green);
-        latitudeValue.text = Input.location.lastData.latitude.ToString();
-        longitudeValue.text = Input.location.lastData.longitude.ToString();
-        altitudeValue.text = Input.location.lastData.altitude.ToString();
-        horizontalAccuracyValue.text = Input.location.lastData.horizontalAccuracy.ToString();
-        timeStampValue.text = Input.location.lastData.timestamp.ToString();
+        GPSStatusStr= "Running";
+        GPSStatusValue.text = GPSStatusStr; 
+        gpsIndicator.GetComponent<Renderer>().material.color = Color.green;
+
+
+// filenameText.text =  "Input.location.lastData.latitude.ToString()";
+        latitudeValueStr = Input.location.lastData.latitude.ToString();
+        longitudeValueStr = Input.location.lastData.longitude.ToString();
+        altitudeValueStr = Input.location.lastData.altitude.ToString();
+        horizontalAccuracyValueStr = Input.location.lastData.horizontalAccuracy.ToString();
+        timeStampValueStr = Input.location.lastData.timestamp.ToString();
+
+
+        latitudeValue.text = latitudeValueStr;
+        longitudeValue.text = longitudeValueStr;
+        altitudeValue.text = altitudeValueStr;
+        horizontalAccuracyValue.text = horizontalAccuracyValueStr;
+        timeStampValue.text = timeStampValueStr;
+
+
+        // latitudeValue.text = Input.location.lastData.latitude.ToString();
+        // longitudeValue.text = Input.location.lastData.longitude.ToString();
+        // altitudeValue.text  = Input.location.lastData.altitude.ToString();
+        // horizontalAccuracyValue.text = Input.location.lastData.horizontalAccuracy.ToString();
+        // horizontalAccuracyValue.text = Input.location.lastData.timestamp.ToString();
 
     }else{
         // service stopped
-        GPSStatus.text = "Stoped";
+        GPSStatusStr="Stoped";
+        GPSStatusValue.text = GPSStatusStr;
         gpsIndicator.GetComponent<Renderer>().material.color = Color.black; 
 
     }
 }
 
+private string AddLocationToCSVstring(string outS){
+        // location to csv file
+        // outS= ""; // initialize with empty
+        outS += System.DateTime.Now.ToString("yy-MM-dd HH:mm") + ", "; //date time     
+        outS +=  "Latitude, Longitude:, " + latitudeValueStr + ", " + longitudeValueStr+ ", ";
+        outS +=  "Altitude: , " +altitudeValueStr+ ", ";
+        outS +=  "Accuracy: , " +horizontalAccuracyValueStr+ ", ";
+        outS +=  "Location status: , " +GPSStatusStr+ ", "; 
+        outS +=  "Location TimeStamp: , " +timeStampValueStr+ ", ";
 
+        return outS;
+}
 
 void Start(){
 
@@ -533,7 +590,12 @@ void Start(){
 
     currentCamIndex = PlayerPrefs.GetInt("currentCamIndex",currentCamIndex);
     currentMicIndex = PlayerPrefs.GetInt("currentMicIndex",currentMicIndex);
+
+    currentCamIndex %= WebCamTexture.devices.Length;  //  Inx not to go beyound Length
+    currentMicIndex %= Microphone.devices.Length;  //  Inx not to go beyound Length
 // Debug.Log("Start: currentCamIndex: "+currentCamIndex);
+
+
 
 
     StartCoroutine(GPSLoc());
@@ -543,6 +605,7 @@ void Start(){
 
  public void Update(){
 
+// UpdateGPSData();
      GetComponent<AudioSource>().GetSpectrumData(spectrum,0,fftWindow);
 // Debug.Log("Spectrum 200 : " + spectrum[200]);
 
@@ -591,6 +654,7 @@ void OnApplicationFocus(bool hasFocus) //https://docs.unity3d.com/ScriptReferenc
     {
 Debug.Log("OnApplicationFocus (save psy): " + hasFocus);
 Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
+
 // Save psy when app goes to background or closed
         if(hasFocus == false){ // when app is closed. 
             // string outS = "Tense, " + psyTense.ToString("##.#")+", ";
@@ -604,11 +668,17 @@ Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
             outS += "Content, " + psyContent.ToString("##.#")+", ";
             outS += "Excited, " + psyExcited.ToString("##.#")+", ";
 
-            reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-hh-mm-tt");
-            filename =path +"/tmp/"+reportFilename; 
-            filenameText.text = "Psy taken: "+reportFilename+".txt";
-            SavWav.WriteString(filename,outS);
+            // reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-hh-mm-tt");
+            // filename =path +"/tmp/"+reportFilename; 
+            // filenameText.text = "Psy taken: "+reportFilename+".txt";
+            // SavWav.WriteString(filename,outS);
 
+            // location to csv file
+            string outSo ="";
+            outSo = AddLocationToCSVstring(outSo); // Add location data to log csv string
+            outSo +=  outS;
+            SavWav.WriteString(path+"/log_psy_v1",outSo);
+            filenameText.text = "  Logfile: log_psy_v1.txt is updated";
 
             // reset sliders 
             for(int i=0;i<8;i++){
@@ -616,7 +686,8 @@ Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
                 myslider.value = 0f;
             }
 
-
+            // reset all
+            ResetAudioButtons();
         }
 
     }
