@@ -51,6 +51,7 @@ public class WebCamMic : MonoBehaviour
     private float speed = 0.25f;
     private float rotationDirection =0f;
     private float pos = 0f;
+    private string foodInput;
 
     private int micStatus = 0; 
     // 0, do nothing, 1, mic activated for checking
@@ -175,6 +176,11 @@ public GameObject gpsIndicator;
             circles[8].transform.localScale = new Vector3(0.3f, 0.3f, 1f);
 
 
+            if(File.Exists(path+"/log_audio_v1"+".txt") == false){ // print header
+                string headr = "Datetime, latitude, longitude, altitude, horizontalAccuracy, GPSStatus, timeStamp, ";
+                headr += "Audio File";
+                SavWav.WriteString(path+"/log_audio_v1",headr);
+            }
         // location to csv file
             string outS ="";
             outS = AddLocationToCSVstring(outS); // Add location data to log csv string
@@ -329,7 +335,13 @@ public GameObject gpsIndicator;
         byte[] bytes = photo.EncodeToPNG();
         File.WriteAllBytes(filename+".png", bytes);
         filenameText.text = "Photo taken: "+reportFilename + ".png";
-Debug.Log("filenameText.text: " +"Photo taken: "+reportFilename + ".png");
+// Debug.Log("filenameText.text: " +"Photo taken: "+reportFilename + ".png");
+
+            if(File.Exists(path+"/log_images_v1"+".txt") == false){ // print header
+                string headr = "Datetime, latitude, longitude, altitude, horizontalAccuracy, GPSStatus, timeStamp, ";
+                headr += "Food Image";
+                SavWav.WriteString(path+"/log_images_v1",headr);
+            }
 
         // location to csv file
         string outS ="";
@@ -590,6 +602,12 @@ private string AddLocationToCSVstring(string outS){
         return outS;
 }
 
+
+public void onFoodInputClicked(){
+    SceneManager.LoadScene("SpeechTextSpeech");
+}
+
+
 void Start(){
 
     // filename for saving png and wav
@@ -613,6 +631,11 @@ void Start(){
 
     StartCoroutine(GPSLoc());
     StartStopCam_Clicked();
+
+    foodInput = PlayerPrefs.GetString("foodText","3401180");
+    if( foodInput.Contains("3401180") == false ){ 
+        filenameText.text = "  Logfile: log_food_v1.txt will be updated on close";
+    }
 
 }
 
@@ -665,8 +688,8 @@ void Start(){
 
 void OnApplicationFocus(bool hasFocus) //https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnApplicationFocus.html
     {
-Debug.Log("OnApplicationFocus (save psy): " + hasFocus);
-Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
+// Debug.Log("OnApplicationFocus (save psy): " + hasFocus);
+// Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
 
 // Save psy when app goes to background or closed
         if(hasFocus == false){ // when app is closed. 
@@ -682,6 +705,16 @@ Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
             // outS += "Content, " + (offs+psyContent).ToString("##.#")+", ";
             // outS += "Excited, " + (offs+psyExcited).ToString("##.#")+", ";
 
+
+// Debug.Log( File.Exists(path+"/log_psy_v1"+".txt") ? "File exists." : "File does not exist."  ); 
+// PSY
+            if(File.Exists(path+"/log_psy_v1"+".txt") == false){ // print header
+                string headr = "Datetime, latitude, longitude, altitude, horizontalAccuracy, GPSStatus, timeStamp, ";
+                headr += "Exhausted, Worried, psyUpset, Depressed, Relaxed, Calm, Content, Excited";
+                SavWav.WriteString(path+"/log_psy_v1",headr);
+            }
+
+
             string outS ="";
             if(System.String.IsNullOrEmpty((psyTense).ToString("##.#"))){outS += "0 , ";}
             else {outS +=  psyTense.ToString("##.#")+", ";}
@@ -690,20 +723,18 @@ Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
             if(System.String.IsNullOrEmpty((psyUpset).ToString("##.#"))){outS += "0 , ";}
             else {outS +=  psyUpset.ToString("##.#")+", ";}            
             if(System.String.IsNullOrEmpty((psyDepressed).ToString("##.#"))){outS += "0 , ";}
-            else {outS +=  psyDepressed.ToString("##.#")+", ";}            
+            else {outS +=  psyDepressed.ToString("##.#")+", ";}   
+
+            if(System.String.IsNullOrEmpty((psyRelaxed).ToString("##.#"))){outS += "0 , ";}
+            else {outS +=  psyRelaxed.ToString("##.#")+", ";}   
             if(System.String.IsNullOrEmpty((psyCalm).ToString("##.#"))){outS += "0 , ";}
             else {outS +=  psyCalm.ToString("##.#")+", ";}            
             if(System.String.IsNullOrEmpty((psyContent).ToString("##.#"))){outS += "0 , ";}
             else {outS +=  psyContent.ToString("##.#")+", ";}
-            if(System.String.IsNullOrEmpty((psyExcited).ToString("##.#"))){outS += "0 , ";}
+            if(System.String.IsNullOrEmpty((psyExcited).ToString("##.#"))){outS += "0  ";}
             else {outS +=  psyExcited.ToString("##.#");}
 
     
-
-            // reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd-hh-mm-tt");
-            // filename =path +"/tmp/"+reportFilename; 
-            // filenameText.text = "Psy taken: "+reportFilename+".txt";
-            // SavWav.WriteString(filename,outS);
 
             // location to csv file
             string outSo ="";
@@ -712,6 +743,25 @@ Debug.Log("in OnApplicationFocus(),  psyTense: " +psyTense.ToString("##.#"));
             SavWav.WriteString(path+"/log_psy_v1",outSo);
             filenameText.text = "  Logfile: log_psy_v1.txt is updated";
 
+// FOOD
+
+            if(File.Exists(path+"/log_food_v1"+".txt") == false){ // print header
+                string headr = "Datetime, latitude, longitude, altitude, horizontalAccuracy, GPSStatus, timeStamp, ";
+                headr += "Food Text";
+                SavWav.WriteString(path+"/log_food_v1",headr);
+            }
+            
+            foodInput = PlayerPrefs.GetString("foodText","3401180");
+            if( foodInput.Contains("3401180") == false ){ // save food Input if input exists
+                PlayerPrefs.SetString("foodText","3401180"); // to prevent mulitple addings of food string
+                PlayerPrefs.Save();
+
+                outSo ="";
+                outSo = AddLocationToCSVstring(outSo); // Add location data to log csv string
+                outSo +=  foodInput; // Add food string
+                SavWav.WriteString(path+"/log_food_v1",outSo);
+                filenameText.text = "  Logfile: log_food_v1.txt is updated";
+            }
             // reset sliders 
             for(int i=0;i<8;i++){
                 myslider = sliders[i].GetComponent<Slider>();
