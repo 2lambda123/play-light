@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TextSpeech;
+using UnityEngine.Android;
 
 public class SampleSpeechToText : MonoBehaviour
 {
@@ -17,6 +18,11 @@ public class SampleSpeechToText : MonoBehaviour
     private bool exampleShown = false;
     void Start()
     {
+    #if PLATFORM_ANDROID
+        if(!Permission.HasUserAuthorizedPermission(Permission.Microphone)){
+            Permission.RequestUserPermission(Permission.Microphone);
+        }
+    #endif        
         inputLocale.text = "en-US";
         txtLocale.text = inputLocale.text;
         Setting(inputLocale.text);

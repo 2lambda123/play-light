@@ -599,7 +599,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: fr-FR
+  m_Text: ru
 --- !u!222 &218076912
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2144,7 +2144,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Back
+  m_Text: Back and Discard
 --- !u!222 &839098666
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4907,7 +4907,7 @@ GameObject:
   - component: {fileID: 1932179362}
   - component: {fileID: 1932179361}
   m_Layer: 5
-  m_Name: ButtonBack
+  m_Name: ButtonBackAndDiscard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4931,7 +4931,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -62, y: -156}
-  m_SizeDelta: {x: 116.8, y: 30.9}
+  m_SizeDelta: {x: 122.08, y: 30.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1932179361
 MonoBehaviour:
@@ -5321,7 +5321,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: fr-FR
+          m_StringArgument: ru
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &2070222026

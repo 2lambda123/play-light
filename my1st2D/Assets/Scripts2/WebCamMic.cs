@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 using System.IO;
+using UnityEngine.Android;
 
 public class WebCamMic : MonoBehaviour
 {
@@ -52,6 +53,7 @@ public class WebCamMic : MonoBehaviour
     private float rotationDirection =0f;
     private float pos = 0f;
     private string foodInput;
+    private string psyInput;
 
     private int micStatus = 0; 
     // 0, do nothing, 1, mic activated for checking
@@ -119,7 +121,11 @@ public GameObject gpsIndicator;
 
     public void StartStopMic_Clicked(){
 
-
+    #if PLATFORM_ANDROID
+        if(!Permission.HasUserAuthorizedPermission(Permission.Microphone)){
+            Permission.RequestUserPermission(Permission.Microphone);
+        }
+    #endif 
 
         if(micStatus==0){  
             // micStatus=1;
@@ -251,7 +257,11 @@ public GameObject gpsIndicator;
     }
 
     public void StartStopCam_Clicked(){
-
+#if UNITY_ANDROID
+    if(!Permission.HasUserAuthorizedPermission(Permission.Camera)){
+        Permission.RequestUserPermission(Permission.Camera);
+    }
+#endif
         //Debug.Log("Start -- button pressed");
         if(tex != null)
         {
@@ -288,7 +298,11 @@ public GameObject gpsIndicator;
     }
 
     public void Snap_Clicked(){
-
+#if UNITY_ANDROID
+    if(!Permission.HasUserAuthorizedPermission(Permission.Camera)){
+        Permission.RequestUserPermission(Permission.Camera);
+    }
+#endif
         //tic = Time.realtimeSinceStartup;
         // https://docs.unity3d.com/ScriptReference/Time-realtimeSinceStartup.html
     // Debug.Log("In Snap_Clicked, Time.realtimeSinceStartup: " );
@@ -305,6 +319,12 @@ public GameObject gpsIndicator;
     }
 
     public void TakeAudio_Clicked(){
+
+    #if PLATFORM_ANDROID
+        if(!Permission.HasUserAuthorizedPermission(Permission.Microphone)){
+            Permission.RequestUserPermission(Permission.Microphone);
+        }
+    #endif 
         StartCoroutine(TakeAudio()); 
     }
     
@@ -474,27 +494,43 @@ private void ResetAudioButtons(){
 public void Tense(float newpsyTense){
     psyTense = newpsyTense;
 // Debug.Log("in Tense(),  psyTense: " +psyTense);
+    PlayerPrefs.SetString("psyText","new Tense was added"); // to prevent mulitple addings of psy string
+    PlayerPrefs.Save();
 }
 public void Worried(float npsyWorried){
     psyWorried = npsyWorried;
+    PlayerPrefs.SetString("psyText","new Worried was added"); // to prevent mulitple addings of psy string
+    PlayerPrefs.Save();
 }
 public void Upset(float npsyUpset){
     psyUpset = npsyUpset;
+    PlayerPrefs.SetString("psyText","new Upset was added"); // to prevent mulitple addings of psy string
+    PlayerPrefs.Save();
 }
 public void Relaxed(float npsyRelaxed){
     psyRelaxed = npsyRelaxed;
+    PlayerPrefs.SetString("psyText","new Relaxed was added"); // to prevent mulitple addings of psy string
+    PlayerPrefs.Save();
 }
 public void Calm(float npsyCalm){
     psyCalm = npsyCalm;
+    PlayerPrefs.SetString("psyText","new Calm was added"); // to prevent mulitple addings of psy string
+    PlayerPrefs.Save();
 }
 public void Content(float npsyContent){
     psyContent = npsyContent;
+    PlayerPrefs.SetString("psyText","new Content was added"); // to prevent mulitple addings of psy string
+    PlayerPrefs.Save();
 }
 public void Excited(float npsyExcited){
     psyExcited = npsyExcited;
+    PlayerPrefs.SetString("psyText","new Excited was added"); // to prevent mulitple addings of psy string
+    PlayerPrefs.Save();
 }
 public void Depressed(float npsyDepressed){
     psyDepressed = npsyDepressed;
+    PlayerPrefs.SetString("psyText","new Depressed was added"); // to prevent mulitple addings of psy string
+    PlayerPrefs.Save();
 }
 
 IEnumerator GPSLoc(){
@@ -607,9 +643,28 @@ public void onFoodInputClicked(){
     SceneManager.LoadScene("SpeechTextSpeech");
 }
 
+public void CheckPermission(){  // permission 
+#if UNITY_ANDROID
+    // if(!Permission.HasUserAuthorizedPermission(Permission.Microphone)){   // permissions asked at the start of mic usage
+    //     Permission.RequestUserPermission(Permission.Microphone);
+    // }
 
+    // if(!Permission.HasUserAuthorizedPermission(Permission.Camera)){   // permissions asked at the start of camera usage
+    //     Permission.RequestUserPermission(Permission.Camera);
+    // }
+
+    if(!Permission.HasUserAuthorizedPermission(Permission.FineLocation)){
+        Permission.RequestUserPermission(Permission.FineLocation);
+    }
+#endif
+
+}
 void Start(){
 
+#if UNITY_ANDROID
+    CheckPermission();
+#endif
+    
     // filename for saving png and wav
     // path = Application.dataPath+"/";
     path = Application.persistentDataPath+"/";  
@@ -632,6 +687,7 @@ void Start(){
     StartCoroutine(GPSLoc());
     StartStopCam_Clicked();
 
+    psyInput = PlayerPrefs.GetString("psyText","3401180");
     foodInput = PlayerPrefs.GetString("foodText","3401180");
     if( foodInput.Contains("3401180") == false ){ 
         filenameText.text = "  Logfile: log_food_v1.txt will be updated on close";
@@ -639,7 +695,7 @@ void Start(){
 
 }
 
- public void Update(){
+public void Update(){
 
 // UpdateGPSData();
      GetComponent<AudioSource>().GetSpectrumData(spectrum,0,fftWindow);
@@ -710,44 +766,49 @@ void OnApplicationFocus(bool hasFocus) //https://docs.unity3d.com/ScriptReferenc
 // PSY
             if(File.Exists(path+"/log_psy_v1"+".txt") == false){ // print header
                 string headr = "Datetime, latitude, longitude, altitude, horizontalAccuracy, GPSStatus, timeStamp, ";
-                headr += "Exhausted, Worried, psyUpset, Depressed, Relaxed, Calm, Content, Excited";
+                headr += "Tense, Worried, Upset, Depressed, Relaxed, Calm, Content, Excited";
                 SavWav.WriteString(path+"/log_psy_v1",headr);
             }
 
+            psyInput = PlayerPrefs.GetString("psyText","3401180");
+            if( psyInput.Contains("3401180") == false ){ // save food Input if input exists
 
-            string outS ="";
-            if(System.String.IsNullOrEmpty((psyTense).ToString("##.#"))){outS += "0 , ";}
-            else {outS +=  psyTense.ToString("##.#")+", ";}
-            if(System.String.IsNullOrEmpty((psyWorried).ToString("##.#"))){outS += "0 , ";}
-            else {outS +=  psyWorried.ToString("##.#")+", ";}            
-            if(System.String.IsNullOrEmpty((psyUpset).ToString("##.#"))){outS += "0 , ";}
-            else {outS +=  psyUpset.ToString("##.#")+", ";}            
-            if(System.String.IsNullOrEmpty((psyDepressed).ToString("##.#"))){outS += "0 , ";}
-            else {outS +=  psyDepressed.ToString("##.#")+", ";}   
 
-            if(System.String.IsNullOrEmpty((psyRelaxed).ToString("##.#"))){outS += "0 , ";}
-            else {outS +=  psyRelaxed.ToString("##.#")+", ";}   
-            if(System.String.IsNullOrEmpty((psyCalm).ToString("##.#"))){outS += "0 , ";}
-            else {outS +=  psyCalm.ToString("##.#")+", ";}            
-            if(System.String.IsNullOrEmpty((psyContent).ToString("##.#"))){outS += "0 , ";}
-            else {outS +=  psyContent.ToString("##.#")+", ";}
-            if(System.String.IsNullOrEmpty((psyExcited).ToString("##.#"))){outS += "0  ";}
-            else {outS +=  psyExcited.ToString("##.#");}
+                string outS ="";
+                if(System.String.IsNullOrEmpty((psyTense).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyTense.ToString("##.#")+", ";}
+                if(System.String.IsNullOrEmpty((psyWorried).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyWorried.ToString("##.#")+", ";}            
+                if(System.String.IsNullOrEmpty((psyUpset).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyUpset.ToString("##.#")+", ";}            
+                if(System.String.IsNullOrEmpty((psyDepressed).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyDepressed.ToString("##.#")+", ";}   
+
+                if(System.String.IsNullOrEmpty((psyRelaxed).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyRelaxed.ToString("##.#")+", ";}   
+                if(System.String.IsNullOrEmpty((psyCalm).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyCalm.ToString("##.#")+", ";}            
+                if(System.String.IsNullOrEmpty((psyContent).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyContent.ToString("##.#")+", ";}
+                if(System.String.IsNullOrEmpty((psyExcited).ToString("##.#"))){outS += "0  ";}
+                else {outS +=  psyExcited.ToString("##.#");}
 
     
 
             // location to csv file
-            string outSo ="";
-            outSo = AddLocationToCSVstring(outSo); // Add location data to log csv string
-            outSo +=  outS;
-            SavWav.WriteString(path+"/log_psy_v1",outSo);
-            filenameText.text = "  Logfile: log_psy_v1.txt is updated";
-
+                string outSo ="";
+                outSo = AddLocationToCSVstring(outSo); // Add location data to log csv string
+                outSo +=  outS;
+                SavWav.WriteString(path+"/log_psy_v1",outSo);
+                filenameText.text = "  Logfile: log_psy_v1.txt is updated";
+            }
 // FOOD
+            reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd_HH-mm");
+            filename =path +"/"+reportFilename; 
 
             if(File.Exists(path+"/log_food_v1"+".txt") == false){ // print header
                 string headr = "Datetime, latitude, longitude, altitude, horizontalAccuracy, GPSStatus, timeStamp, ";
-                headr += "Food Text";
+                headr += "Food Text filename";
                 SavWav.WriteString(path+"/log_food_v1",headr);
             }
             
@@ -756,18 +817,26 @@ void OnApplicationFocus(bool hasFocus) //https://docs.unity3d.com/ScriptReferenc
                 PlayerPrefs.SetString("foodText","3401180"); // to prevent mulitple addings of food string
                 PlayerPrefs.Save();
 
-                outSo ="";
+                string outSo ="";
                 outSo = AddLocationToCSVstring(outSo); // Add location data to log csv string
-                outSo +=  foodInput; // Add food string
+                outSo +=  reportFilename+".txt"; // foodInput; // Add food string
                 SavWav.WriteString(path+"/log_food_v1",outSo);
                 filenameText.text = "  Logfile: log_food_v1.txt is updated";
+
+                SavWav.WriteString(filename,foodInput);
             }
+
+
+
+
+
             // reset sliders 
             for(int i=0;i<8;i++){
                 myslider = sliders[i].GetComponent<Slider>();
                 myslider.value = 0f;
             }
-
+            PlayerPrefs.SetString("psyText","3401180"); // to prevent mulitple addings of zeros in psy string
+            PlayerPrefs.Save();
             // reset all
             ResetAudioButtons();
         }
