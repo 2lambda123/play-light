@@ -640,6 +640,7 @@ private string AddLocationToCSVstring(string outS){
 
 
 public void onFoodInputClicked(){
+    SavePsySliders();
     SceneManager.LoadScene("SpeechTextSpeech");
 }
 
@@ -763,45 +764,7 @@ void OnApplicationFocus(bool hasFocus) //https://docs.unity3d.com/ScriptReferenc
 
 
 // Debug.Log( File.Exists(path+"/log_psy_v1"+".txt") ? "File exists." : "File does not exist."  ); 
-// PSY
-            if(File.Exists(path+"/log_psy_v1"+".txt") == false){ // print header
-                string headr = "Datetime, latitude, longitude, altitude, horizontalAccuracy, GPSStatus, timeStamp, ";
-                headr += "Tense, Worried, Upset, Depressed, Relaxed, Calm, Content, Excited";
-                SavWav.WriteString(path+"/log_psy_v1",headr);
-            }
-
-            psyInput = PlayerPrefs.GetString("psyText","3401180");
-            if( psyInput.Contains("3401180") == false ){ // save food Input if input exists
-
-
-                string outS ="";
-                if(System.String.IsNullOrEmpty((psyTense).ToString("##.#"))){outS += "0 , ";}
-                else {outS +=  psyTense.ToString("##.#")+", ";}
-                if(System.String.IsNullOrEmpty((psyWorried).ToString("##.#"))){outS += "0 , ";}
-                else {outS +=  psyWorried.ToString("##.#")+", ";}            
-                if(System.String.IsNullOrEmpty((psyUpset).ToString("##.#"))){outS += "0 , ";}
-                else {outS +=  psyUpset.ToString("##.#")+", ";}            
-                if(System.String.IsNullOrEmpty((psyDepressed).ToString("##.#"))){outS += "0 , ";}
-                else {outS +=  psyDepressed.ToString("##.#")+", ";}   
-
-                if(System.String.IsNullOrEmpty((psyRelaxed).ToString("##.#"))){outS += "0 , ";}
-                else {outS +=  psyRelaxed.ToString("##.#")+", ";}   
-                if(System.String.IsNullOrEmpty((psyCalm).ToString("##.#"))){outS += "0 , ";}
-                else {outS +=  psyCalm.ToString("##.#")+", ";}            
-                if(System.String.IsNullOrEmpty((psyContent).ToString("##.#"))){outS += "0 , ";}
-                else {outS +=  psyContent.ToString("##.#")+", ";}
-                if(System.String.IsNullOrEmpty((psyExcited).ToString("##.#"))){outS += "0  ";}
-                else {outS +=  psyExcited.ToString("##.#");}
-
-    
-
-            // location to csv file
-                string outSo ="";
-                outSo = AddLocationToCSVstring(outSo); // Add location data to log csv string
-                outSo +=  outS;
-                SavWav.WriteString(path+"/log_psy_v1",outSo);
-                filenameText.text = "  Logfile: log_psy_v1.txt is updated";
-            }
+            SavePsySliders();
 // FOOD
             reportFilename = fileNamePrefix+ System.DateTime.Now.ToString("yy-MM-dd_HH-mm");
             filename =path +"/"+reportFilename; 
@@ -842,5 +805,45 @@ void OnApplicationFocus(bool hasFocus) //https://docs.unity3d.com/ScriptReferenc
         }
 
     }
+    private void SavePsySliders(){
+        // PSY
+            if(File.Exists(path+"/log_psy_v1"+".txt") == false){ // print header
+                string headr = "Datetime, latitude, longitude, altitude, horizontalAccuracy, GPSStatus, timeStamp, ";
+                headr += "Tense, Worried, Upset, Depressed, Relaxed, Calm, Content, Excited";
+                SavWav.WriteString(path+"/log_psy_v1",headr);
+            }
 
+            psyInput = PlayerPrefs.GetString("psyText","3401180");
+            if( psyInput.Contains("3401180") == false ){ // save food Input if input exists
+
+
+                string outS ="";
+                if(System.String.IsNullOrEmpty((psyTense).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyTense.ToString("##.#")+", ";}
+                if(System.String.IsNullOrEmpty((psyWorried).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyWorried.ToString("##.#")+", ";}            
+                if(System.String.IsNullOrEmpty((psyUpset).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyUpset.ToString("##.#")+", ";}            
+                if(System.String.IsNullOrEmpty((psyDepressed).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyDepressed.ToString("##.#")+", ";}   
+
+                if(System.String.IsNullOrEmpty((psyRelaxed).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyRelaxed.ToString("##.#")+", ";}   
+                if(System.String.IsNullOrEmpty((psyCalm).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyCalm.ToString("##.#")+", ";}            
+                if(System.String.IsNullOrEmpty((psyContent).ToString("##.#"))){outS += "0 , ";}
+                else {outS +=  psyContent.ToString("##.#")+", ";}
+                if(System.String.IsNullOrEmpty((psyExcited).ToString("##.#"))){outS += "0  ";}
+                else {outS +=  psyExcited.ToString("##.#");}
+
+    
+
+            // location to csv file
+                string outSo ="";
+                outSo = AddLocationToCSVstring(outSo); // Add location data to log csv string
+                outSo +=  outS;
+                SavWav.WriteString(path+"/log_psy_v1",outSo);
+                filenameText.text = "  Logfile: log_psy_v1.txt is updated";
+            }
+    }// SavePsySliders(){
 }//class
