@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "67737373923",
+    "project_id": "meandrfood",
+    "storage_bucket": "meandrfood.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67737373923:android:06a31d15399241cdd989d6",
+        "android_client_info": {
+          "package_name": "com.trosy.com.PlayLight"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67737373923-r5f7dimcgaag8vqf7svskkai522ar4ag.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDF3aGZugXd92EbJI4fOumN8bBaQVcUM6k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67737373923-r5f7dimcgaag8vqf7svskkai522ar4ag.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

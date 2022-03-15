@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Webcam.unity
     guid: 9ffa6ef0bf8f12044a91ca9e883a5ba4
   - enabled: 1
+    path: Assets/Scenes/ARPlaneDetection.unity
+    guid: c54dbbbc3dcb39d48ba023020938769f
+  - enabled: 1
     path: Assets/Scenes/Audio.unity
     guid: c56a7434cf04c5842800a95c9c9c7ceb
   - enabled: 1
@@ -26,4 +29,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/SpeechAndText/Sample/SampleSpeechToText.unity
     guid: d9447599b4cad0245ac00fa552c354b6
-  m_configObjects: {}
+  m_configObjects:
+    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: fd12347ecef33cf46ab992e404db989c, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: eaad8c69506988d4b81ed964bf2edf25, type: 2}
