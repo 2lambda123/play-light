@@ -1,27 +1,58 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Firebase.Auth;
 
 public class MainMenu : MonoBehaviour
 {
-    public void PlayGame(){
-        //Debug.Log("Button Select Player pressed");
-        
-        string objCalled = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name;
-        int selectedCharacter = int.Parse(objCalled);
+    public Text emailInput, passwordInput;
 
-        GameManager.instance.CharInx = selectedCharacter;
+public void Login(){
+    FirebaseAuth.DefaultInstance.SignInWithEmailAndPasswordAsync(emailInput.text,
+        passwordInput.text).ContinueWith( ( task => {
+            if(task.IsCanceled){
+                return;
+            }
 
-        // int[] a = new int[10];
-        // a[selectedCharacter] = 1;
+            if(task.IsFaulted){
+                Firebase.FirebaseException e = 
+                task.Exception.Flatten().InnerExceptions[0] as Firebase.FirebaseException;
+                GetErrorMessage((AuthError)e.ErrorCode);
+                return;
+            }
 
-        //Debug.Log("Index: " + objCalled);
+            if(task.IsCompleted){
 
-        SceneManager.LoadScene("SampleScene");
-    }
+            }
 
-    public void WebCamTest(){
-        SceneManager.LoadScene("Webcam");
-    }
+        }));
+}//Login
+public void Logout(){
+    
 }
+public void Login_Anonymous(){
+    
+}
+public void RegisterUser(){
+    
+}
+
+
+public void ButtonFoodInput(){
+        SceneManager.LoadScene("Audio");
+    }
+public void ButtonARplane(){
+        SceneManager.LoadScene("ARPlaneDetection");
+    }
+
+
+void GetErrorMessage(AuthError errorCode){
+    string msg = "";
+    msg = errorCode.ToString();
+    print(msg);
+}
+
+
+}//class
